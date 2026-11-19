@@ -1,6 +1,9 @@
 import Constants from 'expo-constants';
 
-const API_BASE_URL = Constants.expoConfig?.extra?.apiUrl || 'http://localhost:5000/api';
+const API_BASE_URL =
+  process.env.EXPO_PUBLIC_API_URL ||
+  Constants.expoConfig?.extra?.apiUrl ||
+  'http://localhost:5000/api';
 
 export interface RegisterResponse {
   success: boolean;
@@ -49,16 +52,29 @@ async function request<T>(
   options: RequestInit = {}
 ): Promise<T> {
   const url = `${API_BASE_URL}${endpoint}`;
-  
-  const response = await fetch(url, {
-    ...options,
-    headers: {
-      'Content-Type': 'application/json',
-      ...options.headers,
-    },
-  });
 
-  const data = await response.json();
+  let response: Response;
+  try {
+    response = await fetch(url, {
+      ...options,
+      headers: {
+        'Content-Type': 'application/json',
+        ...options.headers,
+      },
+    });
+  } catch (err) {
+    throw new ApiException(
+      'Gagal terhubung ke server. Periksa koneksi internet atau server backend.',
+      0
+    );
+  }
+
+  let data: any = {};
+  try {
+    data = await response.json();
+  } catch {
+    data = { success: false, message: response.statusText || 'Gagal memproses respon server' };
+  }
 
   if (!response.ok) {
     throw new ApiException(
