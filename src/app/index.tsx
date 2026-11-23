@@ -1,4 +1,3 @@
-import { useEffect, useRef } from 'react';
 import {
   Animated,
   StatusBar,
@@ -7,66 +6,11 @@ import {
   View,
 } from 'react-native';
 import { Image } from 'expo-image';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { router } from 'expo-router';
+
+import { useSplashController } from '@/controllers/splash/useSplashController';
 
 export default function SplashScreen() {
-  const fadeAnim = useRef(new Animated.Value(0)).current;
-  const scaleAnim = useRef(new Animated.Value(1.02)).current;
-
-  useEffect(() => {
-    // Smooth fade in & gentle scale animation
-    Animated.parallel([
-      Animated.timing(fadeAnim, {
-        toValue: 1,
-        duration: 800,
-        useNativeDriver: true,
-      }),
-      Animated.timing(scaleAnim, {
-        toValue: 1,
-        duration: 2200,
-        useNativeDriver: true,
-      }),
-    ]).start();
-
-    let isMounted = true;
-
-    // Check authentication and navigate after splash delay
-    const timer = setTimeout(async () => {
-      try {
-        const token = await AsyncStorage.getItem('@auth_token');
-        if (isMounted) {
-          if (token) {
-            router.replace('/home');
-          } else {
-            router.replace('/login');
-          }
-        }
-      } catch {
-        if (isMounted) {
-          router.replace('/login');
-        }
-      }
-    }, 2200);
-
-    return () => {
-      isMounted = false;
-      clearTimeout(timer);
-    };
-  }, [fadeAnim, scaleAnim]);
-
-  const handleSkip = async () => {
-    try {
-      const token = await AsyncStorage.getItem('@auth_token');
-      if (token) {
-        router.replace('/home');
-      } else {
-        router.replace('/login');
-      }
-    } catch {
-      router.replace('/login');
-    }
-  };
+  const { fadeAnim, scaleAnim, handleSkip } = useSplashController();
 
   return (
     <View style={styles.container}>
@@ -107,6 +51,8 @@ const styles = StyleSheet.create({
   },
   animatedContainer: {
     flex: 1,
+    width: '100%',
+    height: '100%',
   },
   backgroundImage: {
     width: '100%',

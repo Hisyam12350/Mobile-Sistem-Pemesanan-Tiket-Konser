@@ -1,9 +1,25 @@
+import { Platform } from 'react-native';
 import Constants from 'expo-constants';
 
-const API_BASE_URL =
-  process.env.EXPO_PUBLIC_API_URL ||
-  Constants.expoConfig?.extra?.apiUrl ||
-  'http://localhost:5000/api';
+const getBaseUrl = (): string => {
+  if (process.env.EXPO_PUBLIC_API_URL) {
+    return process.env.EXPO_PUBLIC_API_URL;
+  }
+  if (Constants.expoConfig?.extra?.apiUrl) {
+    return Constants.expoConfig.extra.apiUrl;
+  }
+  const hostUri = Constants.expoConfig?.hostUri || (Constants as any).manifest2?.extra?.expoClient?.hostUri;
+  if (hostUri) {
+    const host = hostUri.split(':')[0];
+    return `http://${host}:5000/api`;
+  }
+  if (Platform.OS === 'android') {
+    return 'http://10.0.2.2:5000/api';
+  }
+  return 'http://localhost:5000/api';
+};
+
+const API_BASE_URL = getBaseUrl();
 
 export interface RegisterResponse {
   success: boolean;
@@ -53,20 +69,32 @@ async function request<T>(
 ): Promise<T> {
   const url = `${API_BASE_URL}${endpoint}`;
 
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 10000);
+
   let response: Response;
   try {
     response = await fetch(url, {
       ...options,
+      signal: controller.signal,
       headers: {
         'Content-Type': 'application/json',
         ...options.headers,
       },
     });
-  } catch (err) {
+  } catch (err: any) {
+    if (err?.name === 'AbortError') {
+      throw new ApiException(
+        'Koneksi timeout (10 detik). Pastikan server backend sedang berjalan di port 5000.',
+        0
+      );
+    }
     throw new ApiException(
-      'Gagal terhubung ke server. Periksa koneksi internet atau server backend.',
+      `Gagal terhubung ke server (${API_BASE_URL}). Pastikan server backend sudah dijalankan di port 5000.`,
       0
     );
+  } finally {
+    clearTimeout(timeoutId);
   }
 
   let data: any = {};

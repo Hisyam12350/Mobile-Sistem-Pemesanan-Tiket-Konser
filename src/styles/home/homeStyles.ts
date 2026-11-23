@@ -1,0 +1,247 @@
+import { StyleSheet } from 'react-native';
+
+export const homeStyles = StyleSheet.create({
+  safeArea: {
+    flex: 1,
+    backgroundColor: '#FFFFFF',
+  },
+  container: {
+    flex: 1,
+    backgroundColor: '#FFFFFF',
+  },
+  scrollContent: {
+    paddingBottom: 24,
+  },
+  header: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: 20,
+    paddingTop: 16,
+    paddingBottom: 16,
+  },
+  greetingTitle: {
+    fontSize: 22,
+    fontWeight: '700',
+    color: '#000000',
+    letterSpacing: -0.3,
+  },
+  greetingSubtitle: {
+    fontSize: 14,
+    color: '#333333',
+    marginTop: 4,
+  },
+  notificationButton: {
+    padding: 6,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  searchContainer: {
+    paddingHorizontal: 20,
+    marginBottom: 20,
+  },
+  searchBar: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    height: 48,
+    borderWidth: 1,
+    borderColor: '#737373',
+    borderRadius: 12,
+    paddingHorizontal: 14,
+    backgroundColor: '#FFFFFF',
+  },
+  searchIcon: {
+    marginRight: 10,
+  },
+  searchInput: {
+    flex: 1,
+    height: '100%',
+    fontSize: 14,
+    color: '#000000',
+    padding: 0,
+  },
+  bannerContainer: {
+    paddingHorizontal: 20,
+    marginBottom: 24,
+  },
+  bannerCard: {
+    width: '100%',
+    height: 160,
+    borderRadius: 16,
+    overflow: 'hidden',
+    backgroundColor: '#170A2C',
+  },
+  bannerImage: {
+    width: '100%',
+    height: '100%',
+  },
+  categoriesContainer: {
+    paddingHorizontal: 20,
+    marginBottom: 24,
+  },
+  categoriesRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  categoryItem: {
+    alignItems: 'center',
+    width: 54,
+  },
+  categoryBox: {
+    width: 52,
+    height: 52,
+    borderWidth: 1,
+    borderColor: '#737373',
+    borderRadius: 12,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#FFFFFF',
+    marginBottom: 6,
+  },
+  categoryBoxActive: {
+    borderColor: '#6F00FF',
+    backgroundColor: '#F5EFFF',
+  },
+  categoryLabel: {
+    fontSize: 12,
+    fontWeight: '500',
+    color: '#222222',
+    textAlign: 'center',
+  },
+  categoryLabelActive: {
+    color: '#6F00FF',
+    fontWeight: '600',
+  },
+  sectionHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: 20,
+    marginBottom: 14,
+  },
+  sectionTitle: {
+    fontSize: 18,
+    fontWeight: '700',
+    color: '#000000',
+  },
+  seeAllText: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#6F00FF',
+  },
+  cardContainer: {
+    paddingHorizontal: 20,
+    marginBottom: 14,
+  },
+  concertCard: {
+    flexDirection: 'row',
+    backgroundColor: '#EBEBEB',
+    borderRadius: 18,
+    padding: 12,
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: '#E0E0E0',
+    overflow: 'hidden',
+  },
+  cardPoster: {
+    width: 86,
+    height: 122,
+    borderRadius: 12,
+    marginRight: 14,
+    backgroundColor: '#D1D1D1',
+  },
+  cardContent: {
+    flex: 1,
+    justifyContent: 'space-between',
+    height: 122,
+    paddingVertical: 2,
+    paddingRight: 4,
+  },
+  cardHeaderRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  cardTitle: {
+    flex: 1,
+    fontSize: 16,
+    fontWeight: '700',
+    color: '#000000',
+    marginRight: 8,
+  },
+  heartButton: {
+    padding: 4,
+  },
+  cardSubtitle: {
+    fontSize: 13,
+    color: '#333333',
+    marginTop: 2,
+  },
+  cardVenue: {
+    fontSize: 13,
+    color: '#333333',
+    marginTop: 2,
+  },
+  cardDate: {
+    fontSize: 13,
+    color: '#333333',
+    marginTop: 2,
+  },
+  cardPriceRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: 6,
+  },
+  cardFromText: {
+    fontSize: 13,
+    color: '#222222',
+  },
+  cardPriceText: {
+    fontSize: 14,
+    fontWeight: '700',
+    color: '#6F00FF',
+    marginLeft: 4,
+  },
+  bottomNav: {
+    flexDirection: 'row',
+    backgroundColor: '#6F00FF',
+    height: 64,
+    justifyContent: 'space-around',
+    alignItems: 'center',
+    paddingHorizontal: 10,
+  },
+  navItem: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    flex: 1,
+  },
+  navLabel: {
+    color: '#FFFFFF',
+    fontSize: 12,
+    fontWeight: '500',
+    marginTop: 2,
+  },
+  loadingContainer: {
+    paddingVertical: 36,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  loadingText: {
+    marginTop: 10,
+    fontSize: 14,
+    color: '#666666',
+  },
+  emptyContainer: {
+    paddingVertical: 32,
+    paddingHorizontal: 20,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  emptyText: {
+    marginTop: 8,
+    fontSize: 14,
+    color: '#777777',
+    textAlign: 'center',
+  },
+});

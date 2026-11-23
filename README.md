@@ -1,43 +1,56 @@
 # 📱 Concertix — Mobile Sistem Pemesanan Tiket Konser
 
-Aplikasi mobile pemesanan tiket konser berbasis **React Native** dan **Expo SDK 58** dengan arsitektur file-based routing menggunakan **Expo Router**. Aplikasi ini merupakan bagian frontend mobile dari proyek UKK (*Uji Kompetensi Keahlian*) Sistem Pemesanan Tiket Konser.
+Aplikasi mobile pemesanan tiket konser berbasis **React Native** dan **Expo SDK 58** dengan arsitektur file-based routing menggunakan **Expo Router** dan pola **Clean Architecture (Separation of Concerns)**. Aplikasi ini merupakan bagian frontend mobile dari proyek UKK (*Uji Kompetensi Keahlian*) Sistem Pemesanan Tiket Konser.
 
 ---
 
 ## 🌟 Fitur Utama yang Telah Diimplementasikan
 
-1. **🎨 Immersive Animated SplashScreen**
-   - Latar belakang visual konser panggung imersif dengan tata cahaya laser dan panggung *"LIVE THE MOMENT"*.
-   - Tipografi utama: **CONCERTIX** dan tagline *"Discover. Book. Enjoy"*.
-   - Animasi smooth fade-in dan gentle scale.
-   - Pengecekan sesi autentikasi otomatis di latar belakang (redirect ke `/home` jika token ditemukan, atau `/login` jika belum masuk).
-   - Fitur *tap-to-skip* untuk langsung masuk ke halaman utama tanpa menunggu timer.
+### 1. 🎨 Immersive Animated SplashScreen
+- Latar belakang visual konser panggung imersif dengan tata cahaya laser dan panggung *"LIVE THE MOMENT"*.
+- Tipografi utama: **CONCERTIX** dan tagline *"Discover. Book. Enjoy"*.
+- Animasi smooth fade-in dan gentle scale.
+- Pengecekan sesi token autentikasi otomatis di latar belakang (redirect ke `/home` jika token ditemukan, atau `/login` jika belum masuk).
+- Fitur *tap-to-skip* untuk langsung masuk ke halaman utama tanpa menunggu timer.
 
-2. **🔐 Tampilan Login Modern & Presisi**
-   - Desain clean minimalis putih dengan input bergaris tepi (*rounded outline*).
-   - Validasi format email dan kata sandi secara real-time.
-   - Fitur **Remember Me** (checkbox interaktif).
-   - Tautan **Forgot password?**.
-   - Tombol utama **Login** berwarna ungu elektrik (*full-width button*).
-   - Tombol login sosial media: **Google** (logo multi-warna) dan **Apple** (logo resmi).
-   - Toggle sembunyikan/tampilkan kata sandi (*eye/eye-off toggle*).
+### 2. 🔐 Autentikasi Pengguna (Login & Register)
+- **Login:** Desain clean minimalis putih dengan validasi email dan kata sandi real-time, toggle sembunyikan/tampilkan password, Remember Me, serta tombol OAuth Google & Apple.
+- **Register:** Pendaftaran akun baru (*Full Name, Email, Password, Confirm password*) dengan validasi kecocokan password, checkbox Terms of Service, dan penanganan error responsif.
+- Terhubung langsung ke REST API backend dengan timeout aman 10 detik via `AbortController`.
 
-3. **📝 Pendaftaran Akun (Create Account / Register)**
-   - Form pendaftaran akun baru: *Full Name*, *Email*, *Password*, dan *Confirm password*.
-   - Validasi kata sandi ganda (mencocokkan konfirmasi password secara presisi).
-   - Checkbox persetujuan **Terms of service**.
-   - Ikon lonceng outline pada header.
-   - Penanganan pesan error server yang informatif (*inline field error* & *general alert box*).
+### 3. 🏠 Home Screen Interaktif & Dinamis
+- **Header:** Menyapa nama pengguna terautentikasi (*"Hello, {username} 👋"*) dan tombol notifikasi.
+- **Search Bar:** Akses cepat untuk pencarian konser, artis, atau venue.
+- **Featured Banner:** Banner konser unggulan (Coldplay World Tour) dengan navigasi langsung ke detail acara.
+- **Kategori Musik:** Filter horizontal (*All, Music, Festival, K-Pop, Pop*) dengan ikon interaktif.
+- **Rekomendasi Konser Real-time:** Daftar konser dinamis dari API backend menampilkan poster beresolusi tinggi, judul, venue, tanggal terformat (ID), dan harga tiket terendah (`From Rp.X.XXX.XXX`).
+- **Pull-to-Refresh:** Tarik layar ke bawah untuk memperbarui daftar konser dari database.
+- Tampilan kartu bersih (*clean presentation*) tanpa elemen overflow.
 
-4. **🏠 Home Dashboard Screen**
-   - Menampilkan data profil pengguna terautentikasi (*username* dan *email*).
-   - Penyimpanan sesi token yang aman menggunakan `@react-native-async-storage/async-storage`.
-   - Tombol **Keluar (Logout)** yang membersihkan token dan mengembalikan pengguna ke halaman Login.
+### 4. 🔎 Search Screen Cepat & Akurat
+- Input pencarian real-time dengan tombol hapus instan `(X)` dan tombol **Cancel**.
+- **Filter Tabs:** Tab filter kategori pencarian:
+  - **All:** Mencari di semua bidang (judul, deskripsi, lokasi, venue).
+  - **Concert:** Khusus memfilter judul konser dan nama tour/musisi.
+  - **Venue:** Khusus menyaring berdasarkan nama stadion/lokasi konser (contoh: JIS, GBK, Surabaya, ICE BSD).
+- Menampilkan seluruh daftar konser dari API secara default saat halaman pertama kali dibuka.
+- Menghubungkan setiap kartu konser langsung ke halaman detail konser.
 
-5. **🌐 Integrasi REST API Backend Handal**
-   - Terhubung langsung dengan REST API backend Node.js / Express.
-   - Konfigurasi URL dinamis melalui environment variable `EXPO_PUBLIC_API_URL`.
-   - Penanganan error jaringan cerdas: menampilkan pesan ramah jika backend offline atau terjadi masalah koneksi internet.
+### 5. 🎫 Detail Concert Screen
+- Hero poster artistik dengan overlay judul konser, nama tour, ikon venue stadion, dan tanggal konser.
+- Bottom sheet putih elegan dengan informasi *"About Concert"* dan tombol toggle *"Read More / Show Less"*.
+- Daftar harga kategori tiket (*Ticket Price*) dengan indikator warna badge tier (VIP, Festival, CAT 1, CAT 2).
+- Tombol aksi utama **Pilih Tiket** (*full-width purple button*).
+- Tombol navigasi kembali yang aman (*defensive fallback navigation*).
+
+### 6. 🏛️ Clean Architecture & Controller Layer
+Setiap layar memisahkan tampilan UI (Presentational View) dan logika bisnis (Controller Hook):
+- `src/controllers/home/useHomeController.ts`
+- `src/controllers/detailConcert/useDetailConcertController.ts`
+- `src/controllers/search/useSearchController.ts`
+- `src/controllers/splash/useSplashController.ts`
+- `src/controllers/login/useLogin.ts`
+- `src/controllers/register/useRegister.ts`
 
 ---
 
@@ -74,9 +87,9 @@ Salin file `.env.example` menjadi `.env`:
 ```bash
 cp .env.example .env
 ```
-Sesuaikan `EXPO_PUBLIC_API_URL` dengan target backend kamu:
+Sesuaikan `EXPO_PUBLIC_API_URL` dengan target backend:
 - **Android Emulator**: `http://10.0.2.2:5000/api`
-- **HP Fisik via Expo Go (Satu Jaringan Wi-Fi)**: `http://<IP_LAN_KOMPUTER>:5000/api` (contoh: `http://192.168.1.15:5000/api`)
+- **HP Fisik via Expo Go (Satu Jaringan Wi-Fi)**: `http://<IP_LAN_KOMPUTER>:5000/api` (contoh: `http://192.168.18.7:5000/api`)
 - **Web / iOS Simulator**: `http://localhost:5000/api`
 
 ### 4. Menjalankan Aplikasi
@@ -86,7 +99,7 @@ npx expo start
 Pilihan kontrol di terminal:
 - Tekan `a` untuk membuka di **Android Emulator**.
 - Tekan `w` untuk membuka di **Web Browser**.
-- Pindai (*scan*) QR Code di terminal menggunakan kamera ponsel / aplikasi **Expo Go** untuk menjalankannya di perangkat fisik.
+- Pindai (*scan*) QR Code di terminal menggunakan aplikasi **Expo Go** untuk menjalankannya di HP fisik.
 
 ---
 
@@ -94,26 +107,40 @@ Pilihan kontrol di terminal:
 
 ```text
 mobile-tiket-konser-2/
-├── assets/                  # Asset gambar, icon, logo sosial, dan splash
+├── assets/                  # Asset gambar poster konser, banner, logo, icon
 │   └── images/
-│       ├── google-logo.png
-│       ├── splash-background.png
-│       └── icon.png
+│       ├── bruno-mars-detail.png
+│       ├── bruno-mars-poster.png
+│       ├── bruno-mars-sketch.png
+│       ├── coldplay-banner.png
+│       └── splash-background.png
 ├── src/
-│   ├── api/                 # Layanan komunikasi HTTP REST API
-│   │   └── authApi.ts
-│   ├── app/                 # Routing file-based (Expo Router)
-│   │   ├── _layout.tsx      # Root layout & animated splash provider
-│   │   ├── index.tsx        # Halaman SplashScreen utama & auth redirect
-│   │   ├── login.tsx        # Halaman Login
-│   │   ├── register.tsx     # Halaman Register (Create Account)
-│   │   └── home.tsx         # Halaman Dashboard setelah login
-│   ├── components/          # Komponen UI modular & animated icon
-│   ├── constants/           # Konstanta tema, warna, dan dimensi
-│   ├── controllers/         # Logika bisnis & custom hooks (useLogin, useRegister)
-│   └── styles/              # Pemisahan StyleSheet halaman (loginStyles, registerStyles)
-├── .env.example             # Contoh template environment variables
-├── app.json                 # Konfigurasi aplikasi Expo & splash native
+│   ├── api/                 # Layanan HTTP REST API client
+│   │   ├── authApi.ts       # Endpoint autentikasi login & register
+│   │   └── eventApi.ts      # Endpoint event konser & kategori tiket
+│   ├── app/                 # Tampilan UI modular (Expo Router file-based)
+│   │   ├── _layout.tsx      # Root stack layout & provider
+│   │   ├── index.tsx        # Layar SplashScreen
+│   │   ├── login.tsx        # Layar Login
+│   │   ├── register.tsx     # Layar Register (Create Account)
+│   │   ├── home.tsx         # Layar Beranda utama
+│   │   ├── search.tsx       # Layar Pencarian konser
+│   │   └── detail-concert.tsx # Layar Detail konser & tiket
+│   ├── controllers/         # Controller Hooks (Logika Bisnis & State)
+│   │   ├── home/useHomeController.ts
+│   │   ├── detailConcert/useDetailConcertController.ts
+│   │   ├── search/useSearchController.ts
+│   │   ├── splash/useSplashController.ts
+│   │   ├── login/useLogin.ts
+│   │   └── register/useRegister.ts
+│   ├── styles/              # Modular StyleSheet terpisah per halaman
+│   │   ├── detailConcert/
+│   │   ├── home/
+│   │   ├── login/
+│   │   ├── register/
+│   │   └── search/
+│   └── constants/           # Konstanta tema, warna, dan dimensi
+├── app.json                 # Konfigurasi aplikasi Expo & splash
 ├── package.json             # Dependensi proyek
 ├── tsconfig.json            # Konfigurasi TypeScript & path aliases (@/*)
 └── README.md                # Dokumentasi proyek
@@ -126,7 +153,7 @@ mobile-tiket-konser-2/
 Proyek ini telah melalui validasi ketat:
 ```bash
 # Pengecekan tipe data TypeScript
-node ./node_modules/typescript/bin/tsc --noEmit
+node ./node_modules/typescript/bin/tsc --project tsconfig.json --noEmit
 # Output: 0 errors
 ```
 
