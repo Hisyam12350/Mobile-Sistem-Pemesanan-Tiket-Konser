@@ -16,6 +16,7 @@ import { Image } from 'expo-image';
 
 import { searchStyles as styles } from '@/styles/search/searchStyles';
 import { useSearchController } from '@/controllers/search/useSearchController';
+import { BottomNav } from '@/components/bottom-nav';
 
 export default function SearchScreen() {
   const {
@@ -166,11 +167,11 @@ export default function SearchScreen() {
                 <Text style={styles.concertSubtitle} numberOfLines={1}>
                   {getEventSubtitle(event)}
                 </Text>
-                <Text style={styles.concertDate}>
-                  {formatEventDate(event.waktu_event)}
-                </Text>
                 <Text style={styles.concertVenue} numberOfLines={1}>
                   {getVenueDisplay(event)}
+                </Text>
+                <Text style={styles.concertDate}>
+                  {formatEventDate(event.waktu_event)}
                 </Text>
 
                 <View style={styles.priceRow}>
@@ -183,59 +184,7 @@ export default function SearchScreen() {
         </ScrollView>
 
         {/* Bottom Navigation Bar */}
-        <View style={styles.bottomNav}>
-          <TouchableOpacity
-            style={styles.navItem}
-            onPress={() => handleTabPress('Home')}
-            activeOpacity={0.8}
-          >
-            <Ionicons
-              name={activeTab === 'Home' ? 'home' : 'home-outline'}
-              size={24}
-              color="#FFFFFF"
-            />
-            <Text style={styles.navLabel}>Home</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            style={styles.navItem}
-            onPress={() => handleTabPress('Search')}
-            activeOpacity={0.8}
-          >
-            <Ionicons
-              name={activeTab === 'Search' ? 'search' : 'search-outline'}
-              size={24}
-              color="#FFFFFF"
-            />
-            <Text style={styles.navLabel}>Search</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            style={styles.navItem}
-            onPress={() => handleTabPress('Tickets')}
-            activeOpacity={0.8}
-          >
-            <MaterialCommunityIcons
-              name={activeTab === 'Tickets' ? 'ticket-confirmation' : 'ticket-confirmation-outline'}
-              size={24}
-              color="#FFFFFF"
-            />
-            <Text style={styles.navLabel}>Tickets</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            style={styles.navItem}
-            onPress={() => handleTabPress('Profile')}
-            activeOpacity={0.8}
-          >
-            <Ionicons
-              name={activeTab === 'Profile' ? 'person' : 'person-outline'}
-              size={24}
-              color="#FFFFFF"
-            />
-            <Text style={styles.navLabel}>Profile</Text>
-          </TouchableOpacity>
-        </View>
+        <BottomNav activeTab={activeTab as any} onTabPress={handleTabPress} />
       </KeyboardAvoidingView>
     </SafeAreaView>
   );

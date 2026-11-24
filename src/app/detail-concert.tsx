@@ -11,6 +11,7 @@ import { Image } from 'expo-image';
 
 import { detailConcertStyles as styles } from '@/styles/detailConcert/detailConcertStyles';
 import { useDetailConcertController } from '@/controllers/detailConcert/useDetailConcertController';
+import { BottomNav } from '@/components/bottom-nav';
 
 export default function DetailConcertScreen() {
   const {
@@ -28,6 +29,7 @@ export default function DetailConcertScreen() {
     toggleFavorite,
     toggleExpanded,
     handlePilihTiket,
+    handleBottomTabPress,
   } = useDetailConcertController();
 
   return (
@@ -39,7 +41,6 @@ export default function DetailConcertScreen() {
         contentContainerStyle={styles.scrollContent}
         bounces={false}
       >
-        {/* Hero Section */}
         <View style={styles.heroContainer}>
           <Image
             source={getHeroImage()}
@@ -132,6 +133,8 @@ export default function DetailConcertScreen() {
           </TouchableOpacity>
         </View>
       </ScrollView>
+
+      <BottomNav activeTab="Home" onTabPress={handleBottomTabPress as any} />
     </View>
   );
 }

@@ -227,7 +227,11 @@ export function useSearchController() {
   };
 
   const handleTabPress = (tabName: string) => {
-    if (tabName === 'Home') {
+    if (tabName === 'Tickets') {
+      (router as any).push('/riwayat-tiket');
+    } else if (tabName === 'Profile') {
+      (router as any).push('/profile');
+    } else if (tabName === 'Home') {
       (router as any).replace('/home');
     } else {
       setActiveTab(tabName);

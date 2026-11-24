@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react';
-import { Alert } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
 
 import { eventApi, EventItem } from '@/api/eventApi';
@@ -130,7 +129,26 @@ export function useDetailConcertController() {
   };
 
   const handlePilihTiket = () => {
-    Alert.alert('Pilih Tiket', 'Fitur pemilihan kursi konser akan segera hadir!');
+    (router as any).push({
+      pathname: '/pilih-tiket',
+      params: { id: String(eventId) },
+    });
+  };
+
+  const handleBottomTabPress = (tab: 'Home' | 'Search' | 'Tickets' | 'Profile') => {
+    if (tab === 'Tickets') {
+      (router as any).push('/riwayat-tiket');
+      return;
+    }
+    if (tab === 'Profile') {
+      (router as any).push('/profile');
+      return;
+    }
+    if (tab === 'Search') {
+      (router as any).push('/search');
+      return;
+    }
+    (router as any).replace('/home');
   };
 
   return {
@@ -150,5 +168,6 @@ export function useDetailConcertController() {
     toggleFavorite,
     toggleExpanded,
     handlePilihTiket,
+    handleBottomTabPress,
   };
 }
