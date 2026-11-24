@@ -54,11 +54,9 @@ export default function ProfileScreen() {
       >
         {/* Hero Section */}
         <View style={styles.hero}>
-          <Image
-            source={require('@/assets/images/splash-background.png')}
-            style={styles.heroBackground}
-            contentFit="cover"
-          />
+          <View style={styles.heroHeader}>
+            <Text style={styles.heroTitle}>Profile</Text>
+          </View>
 
           <View style={styles.avatarContainer}>
             <Image
@@ -68,23 +66,32 @@ export default function ProfileScreen() {
             />
           </View>
 
-          <Text style={styles.heroName}>{user?.username || 'User'}</Text>
-          <Text style={styles.heroEmail}>{user?.email || 'User1234@gmail.com'}</Text>
+          <Text style={styles.heroName}>{user?.username || 'shasa'}</Text>
+          <Text style={styles.heroEmail}>{user?.email || 'shasa@gmail.com'}</Text>
         </View>
 
         {/* White Content Sheet */}
         <View style={styles.contentCard}>
-          {/* Stats Summary Box */}
+          {/* Stats Summary Box (Image 1 Mockup) */}
           <View style={styles.statsCard}>
-            {stats.map((stat, index) => (
-              <View key={stat.label + index} style={styles.statColumn}>
-                <Text style={styles.statLabel}>{stat.label}</Text>
-                <Text style={styles.statValue}>{stat.value}</Text>
-                {index < stats.length - 1 ? (
-                  <View style={styles.statDivider} />
-                ) : null}
-              </View>
-            ))}
+            <View style={styles.statColumn}>
+              <Text style={styles.statLabel}>Orders</Text>
+              <Text style={styles.statValue}>{stats[0]?.value ?? 12}</Text>
+            </View>
+
+            <View style={styles.statDivider} />
+
+            <View style={styles.statColumn}>
+              <Text style={styles.statLabel}>Orders</Text>
+              <Text style={styles.statValue}>{stats[1]?.value ?? 24}</Text>
+            </View>
+
+            <View style={styles.statDivider} />
+
+            <View style={styles.statColumn}>
+              <Text style={styles.statLabel}>Favorites</Text>
+              <Text style={styles.statValue}>{stats[2]?.value ?? 8}</Text>
+            </View>
           </View>
 
           {/* Menu Items List */}
