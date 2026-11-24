@@ -25,16 +25,16 @@ Aplikasi mobile pemesanan tiket konser berbasis **React Native** dan **Expo SDK 
 - **Kategori Musik:** Filter horizontal (*All, Music, Festival, K-Pop, Pop*) dengan ikon interaktif.
 - **Rekomendasi Konser Real-time:** Daftar konser dinamis dari API backend menampilkan poster beresolusi tinggi, judul, venue, tanggal terformat (ID), dan harga tiket terendah (`From Rp.X.XXX.XXX`).
 - **Pull-to-Refresh:** Tarik layar ke bawah untuk memperbarui daftar konser dari database.
-- Tampilan kartu bersih (*clean presentation*) tanpa elemen overflow.
+- Tampilan kartu bersih (*clean presentation*) tanpa elemen overflow dan tanpa logo love yang mengganggu.
 
 ### 4. 🔎 Search Screen Cepat & Akurat
 - Input pencarian real-time dengan tombol hapus instan `(X)` dan tombol **Cancel**.
 - **Filter Tabs:** Tab filter kategori pencarian:
   - **All:** Mencari di semua bidang (judul, deskripsi, lokasi, venue).
   - **Concert:** Khusus memfilter judul konser dan nama tour/musisi.
-  - **Venue:** Khusus menyaring berdasarkan nama stadion/lokasi konser (contoh: JIS, GBK, Surabaya, ICE BSD).
-- Menampilkan seluruh daftar konser dari API secara default saat halaman pertama kali dibuka.
-- Menghubungkan setiap kartu konser langsung ke halaman detail konser.
+  - **Venue:** Khusus menyaring berdasarkan nama stadion/lokasi konser (contoh: JIS, GBK, ICE BSD).
+- Format kartu konser modern berbingkai halus dengan sudut membulat (`borderRadius: 18`) yang selaras dengan tema aplikasi.
+- Menampilkan seluruh daftar konser dari API secara default dan menghubungkan setiap kartu langsung ke halaman detail konser.
 
 ### 5. 🎫 Detail Concert Screen
 - Hero poster artistik dengan overlay judul konser, nama tour, ikon venue stadion, dan tanggal konser.
@@ -43,11 +43,25 @@ Aplikasi mobile pemesanan tiket konser berbasis **React Native** dan **Expo SDK 
 - Tombol aksi utama **Pilih Tiket** (*full-width purple button*).
 - Tombol navigasi kembali yang aman (*defensive fallback navigation*).
 
-### 6. 🏛️ Clean Architecture & Controller Layer
+### 6. 🎟️ Pilih Tiket & Riwayat Pemesanan (Tickets)
+- **Pilih Tiket (`/pilih-tiket`):** Antarmuka pemilihan kategori tiket, perhitungan kuantitas dinamis, dan kalkulasi total harga tiket secara otomatis.
+- **Riwayat Tiket (`/riwayat-tiket`):** Daftar tiket yang sudah dibeli dengan tab status (Upcoming, Past, Cancelled), kode booking, barcode scanner view, dan detail transaksi.
+
+### 7. 👤 Profile Pengguna & Manajemen Sesi
+- **Hero Cosmic Header:** Tampilan tema luar angkasa gelap elegan (`#090014`) dengan avatar pengguna berbingkai putih dan judul halaman *"Profile"*.
+- **Kotak Ringkasan Statistik:** Tiga kolom statistik interaktif (**Orders (12)**, **Orders (24)**, dan **Favorites (8)**) dengan pembatas vertikal proporsional berlatar abu-abu netral.
+- **Menu Pengaturan Akun:** Daftar opsi lengkap mencakup *Personal Information*, *Payment Methods*, *My Vouchers*, *Notification*, *Help Center*, dan *About Concertix*.
+- **Aksi Logout Aman:** Tombol Logout berwarna merah dengan dialog konfirmasi Alert dan pembersihan sesi lokal (`@auth_token`, `@auth_user`).
+- **Resilient Offline Cache & 401 Handling:** Profil memuat data pengguna secara instan dari cache lokal `AsyncStorage`. Sesi yang kadaluwarsa (HTTP 401) ditangani secara senyap tanpa memicu popup banner error.
+
+### 8. 🏛️ Clean Architecture & Controller Layer
 Setiap layar memisahkan tampilan UI (Presentational View) dan logika bisnis (Controller Hook):
 - `src/controllers/home/useHomeController.ts`
 - `src/controllers/detailConcert/useDetailConcertController.ts`
 - `src/controllers/search/useSearchController.ts`
+- `src/controllers/profile/useProfileController.ts`
+- `src/controllers/pilihTiket/usePilihTiketController.ts`
+- `src/controllers/riwayatTiket/useRiwayatTiketController.ts`
 - `src/controllers/splash/useSplashController.ts`
 - `src/controllers/login/useLogin.ts`
 - `src/controllers/register/useRegister.ts`
@@ -107,17 +121,20 @@ Pilihan kontrol di terminal:
 
 ```text
 mobile-tiket-konser-2/
-├── assets/                  # Asset gambar poster konser, banner, logo, icon
+├── assets/                  # Asset gambar poster konser, banner, logo, avatar
 │   └── images/
 │       ├── bruno-mars-detail.png
 │       ├── bruno-mars-poster.png
 │       ├── bruno-mars-sketch.png
 │       ├── coldplay-banner.png
-│       └── splash-background.png
+│       ├── splash-background.png
+│       └── user-avatar.png
 ├── src/
 │   ├── api/                 # Layanan HTTP REST API client
 │   │   ├── authApi.ts       # Endpoint autentikasi login & register
-│   │   └── eventApi.ts      # Endpoint event konser & kategori tiket
+│   │   ├── eventApi.ts      # Endpoint event konser & kategori tiket
+│   │   ├── ticketApi.ts     # Endpoint pemesanan tiket & transaksi
+│   │   └── userApi.ts       # Endpoint profil user (/auth/me) & session
 │   ├── app/                 # Tampilan UI modular (Expo Router file-based)
 │   │   ├── _layout.tsx      # Root stack layout & provider
 │   │   ├── index.tsx        # Layar SplashScreen
@@ -125,11 +142,19 @@ mobile-tiket-konser-2/
 │   │   ├── register.tsx     # Layar Register (Create Account)
 │   │   ├── home.tsx         # Layar Beranda utama
 │   │   ├── search.tsx       # Layar Pencarian konser
-│   │   └── detail-concert.tsx # Layar Detail konser & tiket
+│   │   ├── detail-concert.tsx # Layar Detail konser & kategori tiket
+│   │   ├── pilih-tiket.tsx  # Layar Pemilihan jumlah tiket
+│   │   ├── riwayat-tiket.tsx # Layar Riwayat pemesanan tiket
+│   │   └── profile.tsx      # Layar Profil akun pengguna
+│   ├── components/          # Reusable UI components
+│   │   └── bottom-nav.tsx   # Universal Bottom Navigation (Purple & White themes)
 │   ├── controllers/         # Controller Hooks (Logika Bisnis & State)
 │   │   ├── home/useHomeController.ts
 │   │   ├── detailConcert/useDetailConcertController.ts
 │   │   ├── search/useSearchController.ts
+│   │   ├── profile/useProfileController.ts
+│   │   ├── pilihTiket/usePilihTiketController.ts
+│   │   ├── riwayatTiket/useRiwayatTiketController.ts
 │   │   ├── splash/useSplashController.ts
 │   │   ├── login/useLogin.ts
 │   │   └── register/useRegister.ts
@@ -137,8 +162,12 @@ mobile-tiket-konser-2/
 │   │   ├── detailConcert/
 │   │   ├── home/
 │   │   ├── login/
+│   │   ├── pilihTiket/
+│   │   ├── profile/
 │   │   ├── register/
-│   │   └── search/
+│   │   ├── riwayatTiket/
+│   │   ├── search/
+│   │   └── shared/
 │   └── constants/           # Konstanta tema, warna, dan dimensi
 ├── app.json                 # Konfigurasi aplikasi Expo & splash
 ├── package.json             # Dependensi proyek
