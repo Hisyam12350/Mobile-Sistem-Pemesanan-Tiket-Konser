@@ -41,13 +41,25 @@ export function useLogin() {
     setErrors({});
 
     try {
-      const response = await authApi.login(email.trim(), password);
+      const response = await authApi.login(email.trim().toLowerCase(), password);
       if (response.success && response.token && response.user) {
         await AsyncStorage.setItem(STORAGE_KEYS.TOKEN, response.token);
         await AsyncStorage.setItem(STORAGE_KEYS.USER, JSON.stringify(response.user));
       }
       return response;
     } catch (error) {
+      if (error instanceof ApiException && error.data?.errors) {
+        const fieldErrors = error.data.errors;
+        setErrors({
+          email: fieldErrors.email?.[0],
+          password: fieldErrors.password?.[0],
+          general:
+            !fieldErrors.email && !fieldErrors.password
+              ? error.data?.message || error.message
+              : undefined,
+        });
+        return null;
+      }
       const errMessage = error instanceof Error ? error.message : String(error);
       setErrors({
         general: error instanceof ApiException

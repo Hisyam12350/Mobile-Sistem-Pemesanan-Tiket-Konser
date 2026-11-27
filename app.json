@@ -32,6 +32,14 @@
           "image": "./assets/images/splash-background.png",
           "resizeMode": "contain"
         }
+      ],
+      [
+        "expo-media-library",
+        {
+          "photosPermission": "Izinkan Concertix mengakses galeri foto untuk menyimpan QR E-Ticket.",
+          "savePhotosPermission": "Izinkan Concertix menyimpan gambar QR E-Ticket ke galeri Anda.",
+          "isAccessMediaLocationEnabled": false
+        }
       ]
     ],
     "experiments": {

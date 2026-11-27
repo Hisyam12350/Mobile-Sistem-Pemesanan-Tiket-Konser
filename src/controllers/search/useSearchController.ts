@@ -25,28 +25,50 @@ export function useSearchController() {
   const [isLoading, setIsLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
 
-  const fetchEvents = useCallback(async () => {
-    try {
-      const res = await eventApi.getEvents();
-      if (res && res.length > 0) {
-        setEvents(res);
-      }
-    } catch (err) {
-      console.warn('Gagal memuat event di search:', err);
-    } finally {
-      setIsLoading(false);
-      setIsRefreshing(false);
+  useEffect(() => {
+    if (typeof params.q === 'string') {
+      const incomingQuery = params.q;
+      Promise.resolve().then(() => {
+        setSearchQuery(incomingQuery);
+      });
     }
-  }, []);
+  }, [params.q]);
 
   useEffect(() => {
-    fetchEvents();
-  }, [fetchEvents]);
+    let isMounted = true;
+
+    eventApi
+      .getEvents()
+      .then(res => {
+        if (isMounted && res && res.length > 0) {
+          setEvents(res);
+        }
+      })
+      .finally(() => {
+        if (isMounted) {
+          setIsLoading(false);
+        }
+      });
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
   const onRefresh = useCallback(() => {
     setIsRefreshing(true);
-    fetchEvents();
-  }, [fetchEvents]);
+    eventApi
+      .getEvents()
+      .then(res => {
+        if (res && res.length > 0) {
+          setEvents(res);
+        }
+      })
+      .finally(() => {
+        setIsLoading(false);
+        setIsRefreshing(false);
+      });
+  }, []);
 
   const filterTabs: SearchFilterType[] = ['All', 'Concert', 'Venue'];
 

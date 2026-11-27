@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import {
   ActivityIndicator,
+  Alert,
   KeyboardAvoidingView,
   Platform,
   ScrollView,
@@ -55,7 +56,7 @@ export default function LoginScreen() {
           <View style={styles.mainContent}>
             {/* Header */}
             <View style={styles.header}>
-              <Text style={styles.title}>Walcome Back! 👋</Text>
+              <Text style={styles.title}>Welcome Back! 👋</Text>
               <Text style={styles.subtitle}>Login to continue</Text>
             </View>
 
@@ -134,7 +135,15 @@ export default function LoginScreen() {
                 </View>
                 <Text style={styles.rememberText}>Remember me</Text>
               </TouchableOpacity>
-              <TouchableOpacity activeOpacity={0.7}>
+              <TouchableOpacity
+                activeOpacity={0.7}
+                onPress={() =>
+                  Alert.alert(
+                    'Lupa Password',
+                    'Silakan hubungi admin atau gunakan fitur reset password untuk mengatur ulang kata sandi akun Anda.'
+                  )
+                }
+              >
                 <Text style={styles.forgotText}>Forgot password?</Text>
               </TouchableOpacity>
             </View>
@@ -156,13 +165,19 @@ export default function LoginScreen() {
             {/* Divider */}
             <View style={styles.dividerRow}>
               <View style={styles.dividerLine} />
-              <Text style={styles.dividerText}>of continue with</Text>
+              <Text style={styles.dividerText}>or continue with</Text>
               <View style={styles.dividerLine} />
             </View>
 
             {/* Social Buttons */}
             <View style={styles.socialRow}>
-              <TouchableOpacity style={styles.socialButton} activeOpacity={0.75}>
+              <TouchableOpacity
+                style={styles.socialButton}
+                activeOpacity={0.75}
+                onPress={() =>
+                  Alert.alert('Google Login', 'Login dengan akun Google akan segera tersedia.')
+                }
+              >
                 <Image
                   source={require('@/assets/images/google-logo.png')}
                   style={{ width: 20, height: 20, marginRight: 8 }}
@@ -171,7 +186,13 @@ export default function LoginScreen() {
                 <Text style={styles.socialButtonText}>Google</Text>
               </TouchableOpacity>
 
-              <TouchableOpacity style={styles.socialButton} activeOpacity={0.75}>
+              <TouchableOpacity
+                style={styles.socialButton}
+                activeOpacity={0.75}
+                onPress={() =>
+                  Alert.alert('Apple Login', 'Login dengan Apple ID akan segera tersedia.')
+                }
+              >
                 <Ionicons
                   name="logo-apple"
                   size={22}

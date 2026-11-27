@@ -1,21 +1,21 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Animated } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { router } from 'expo-router';
 
 export function useSplashController() {
-  const fadeAnim = useRef(new Animated.Value(0));
-  const scaleAnim = useRef(new Animated.Value(1.02));
+  const [fadeAnim] = useState(() => new Animated.Value(0));
+  const [scaleAnim] = useState(() => new Animated.Value(1.02));
+  const hasNavigated = useRef(false);
 
   useEffect(() => {
-    // Smooth fade in & gentle scale animation
     Animated.parallel([
-      Animated.timing(fadeAnim.current, {
+      Animated.timing(fadeAnim, {
         toValue: 1,
         duration: 800,
         useNativeDriver: true,
       }),
-      Animated.timing(scaleAnim.current, {
+      Animated.timing(scaleAnim, {
         toValue: 1,
         duration: 2200,
         useNativeDriver: true,
@@ -24,8 +24,9 @@ export function useSplashController() {
 
     let isMounted = true;
 
-    // Check authentication and navigate after splash delay
     const timer = setTimeout(async () => {
+      if (!isMounted || hasNavigated.current) return;
+      hasNavigated.current = true;
       try {
         const token = await AsyncStorage.getItem('@auth_token');
         if (isMounted) {
@@ -46,9 +47,11 @@ export function useSplashController() {
       isMounted = false;
       clearTimeout(timer);
     };
-  }, []);
+  }, [fadeAnim, scaleAnim]);
 
   const handleSkip = async () => {
+    if (hasNavigated.current) return;
+    hasNavigated.current = true;
     try {
       const token = await AsyncStorage.getItem('@auth_token');
       if (token) {
@@ -62,8 +65,8 @@ export function useSplashController() {
   };
 
   return {
-    fadeAnim: fadeAnim.current,
-    scaleAnim: scaleAnim.current,
+    fadeAnim,
+    scaleAnim,
     handleSkip,
   };
 }

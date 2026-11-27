@@ -6,7 +6,7 @@ export const detailConcertStyles = StyleSheet.create({
     backgroundColor: '#FFFFFF',
   },
   scrollContent: {
-    paddingBottom: 36,
+    paddingBottom: 90,
   },
   heroContainer: {
     width: '100%',

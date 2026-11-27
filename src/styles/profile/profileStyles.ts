@@ -9,7 +9,7 @@ export const profileStyles = StyleSheet.create({
     flex: 1,
   },
   scrollContent: {
-    paddingBottom: 24,
+    paddingBottom: 90,
   },
   hero: {
     paddingTop: 10,

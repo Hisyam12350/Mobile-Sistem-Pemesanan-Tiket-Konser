@@ -82,7 +82,7 @@ export const searchStyles = StyleSheet.create({
   scrollContent: {
     paddingHorizontal: 20,
     paddingTop: 20,
-    paddingBottom: 30,
+    paddingBottom: 90,
   },
   sectionTitle: {
     fontSize: 20,
@@ -170,24 +170,5 @@ export const searchStyles = StyleSheet.create({
     fontSize: 15,
     color: '#777777',
     textAlign: 'center',
-  },
-  bottomNav: {
-    flexDirection: 'row',
-    backgroundColor: '#6F00FF',
-    height: 64,
-    justifyContent: 'space-around',
-    alignItems: 'center',
-    paddingHorizontal: 10,
-  },
-  navItem: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    flex: 1,
-  },
-  navLabel: {
-    color: '#FFFFFF',
-    fontSize: 12,
-    fontWeight: '500',
-    marginTop: 2,
   },
 });

@@ -35,27 +35,31 @@ const STORAGE_KEYS = {
 
 function validateForm(data: RegisterFormData): RegisterErrors {
   const errors: RegisterErrors = {};
+  const trimmedName = data.name.trim();
+  const trimmedEmail = data.email.trim();
 
-  if (!data.name.trim()) {
+  if (!trimmedName) {
     errors.name = 'Full Name wajib diisi';
-  } else if (data.name.length < 3) {
+  } else if (trimmedName.length < 3) {
     errors.name = 'Full Name minimal 3 karakter';
-  } else if (data.name.length > 50) {
+  } else if (trimmedName.length > 50) {
     errors.name = 'Full Name maksimal 50 karakter';
   }
 
-  if (!data.email.trim()) {
+  if (!trimmedEmail) {
     errors.email = 'Email wajib diisi';
-  } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.email)) {
+  } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmedEmail)) {
     errors.email = 'Format email tidak valid';
+  } else if (trimmedEmail.length > 254) {
+    errors.email = 'Email terlalu panjang';
   }
 
   if (!data.password) {
     errors.password = 'Password wajib diisi';
-  } else if (data.password.length < 6) {
-    errors.password = 'Password minimal 6 karakter';
-  } else if (data.password.length > 100) {
-    errors.password = 'Password maksimal 100 karakter';
+  } else if (data.password.length < 8) {
+    errors.password = 'Password minimal 8 karakter';
+  } else if (data.password.length > 72) {
+    errors.password = 'Password maksimal 72 karakter';
   }
 
   if (!data.confirmPassword) {
@@ -105,7 +109,11 @@ export function useRegister(): UseRegisterReturn {
     setErrors({});
 
     try {
-      const response = await authApi.register(formData.name, formData.email, formData.password);
+      const response = await authApi.register(
+        formData.name.trim(),
+        formData.email.trim().toLowerCase(),
+        formData.password
+      );
 
       if (response.success && response.token && response.user) {
         await AsyncStorage.setItem(STORAGE_KEYS.TOKEN, response.token);
@@ -115,7 +123,20 @@ export function useRegister(): UseRegisterReturn {
       return response;
     } catch (error) {
       if (error instanceof ApiException) {
-        setErrors({ general: error.data?.message || error.message });
+        const fieldErrors = error.data?.errors;
+        if (fieldErrors) {
+          setErrors({
+            name: fieldErrors.username?.[0],
+            email: fieldErrors.email?.[0],
+            password: fieldErrors.password?.[0],
+            general:
+              !fieldErrors.username && !fieldErrors.email && !fieldErrors.password
+                ? error.data?.message || error.message
+                : undefined,
+          });
+        } else {
+          setErrors({ general: error.data?.message || error.message });
+        }
       } else {
         setErrors({ general: 'Terjadi kesalahan yang tidak diketahui' });
       }

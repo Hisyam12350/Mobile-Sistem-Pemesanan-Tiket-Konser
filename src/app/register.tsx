@@ -19,6 +19,7 @@ import { registerStyles as styles } from '@/styles/register/registerStyles';
 
 export default function RegisterScreen() {
   const [agreedToTerms, setAgreedToTerms] = useState(false);
+  const [termsError, setTermsError] = useState<string | null>(null);
   const [confirmPasswordVisible, setConfirmPasswordVisible] = useState(false);
 
   const {
@@ -32,6 +33,11 @@ export default function RegisterScreen() {
   } = useRegister();
 
   const handleSubmitPress = async () => {
+    if (!agreedToTerms) {
+      setTermsError('Anda wajib menyetujui Terms of service untuk mendaftar');
+      return;
+    }
+    setTermsError(null);
     const response = await handleSubmit();
     if (response?.success) {
       router.replace('/home');
@@ -61,13 +67,13 @@ export default function RegisterScreen() {
                 style={styles.bellIcon}
               />
               <Text style={styles.title}>Create Account</Text>
-              <Text style={styles.subtitle}>Sing up to get started</Text>
+              <Text style={styles.subtitle}>Sign up to get started</Text>
             </View>
 
             {/* General Error */}
-            {errors.general ? (
+            {errors.general || termsError ? (
               <View style={styles.generalErrorContainer}>
-                <Text style={styles.generalErrorText}>{errors.general}</Text>
+                <Text style={styles.generalErrorText}>{errors.general || termsError}</Text>
               </View>
             ) : null}
 
@@ -178,7 +184,13 @@ export default function RegisterScreen() {
             {/* Terms of Service Checkbox */}
             <TouchableOpacity
               style={styles.checkboxContainer}
-              onPress={() => setAgreedToTerms(value => !value)}
+              onPress={() => {
+                setAgreedToTerms(value => {
+                  const next = !value;
+                  if (next) setTermsError(null);
+                  return next;
+                });
+              }}
               activeOpacity={0.8}
               accessibilityRole="checkbox"
               accessibilityState={{ checked: agreedToTerms }}
@@ -189,9 +201,7 @@ export default function RegisterScreen() {
                 ) : null}
               </View>
               <Text style={styles.termsText}>I agree to the</Text>
-              <TouchableOpacity activeOpacity={0.7}>
-                <Text style={styles.termsLink}>Terms of service</Text>
-              </TouchableOpacity>
+              <Text style={styles.termsLink}>Terms of service</Text>
             </TouchableOpacity>
 
             {/* Sign up Button */}

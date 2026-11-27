@@ -8,6 +8,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
+import { Image } from 'expo-image';
 
 import { riwayatTiketStyles as styles } from '@/styles/riwayatTiket/riwayatTiketStyles';
 import { useRiwayatTiketController } from '@/controllers/riwayatTiket/useRiwayatTiketController';
@@ -18,13 +19,14 @@ export default function RiwayatTiketScreen() {
     activeTab,
     filteredTickets,
     isLoading,
+    getTicketPoster,
     handleTabPress,
     handleBottomTabPress,
     handleOpenDetail,
     handleBack,
   } = useRiwayatTiketController();
 
-  const tabs: Array<'Upcoming' | 'Completed' | 'Canceled'> = [
+  const tabs: ('Upcoming' | 'Completed' | 'Canceled')[] = [
     'Upcoming',
     'Completed',
     'Canceled',
@@ -90,7 +92,11 @@ export default function RiwayatTiketScreen() {
                 onPress={() => handleOpenDetail(item.id)}
                 activeOpacity={0.85}
               >
-                <View style={styles.poster} />
+                <Image
+                  source={getTicketPoster(item)}
+                  style={styles.poster}
+                  contentFit="cover"
+                />
                 <View style={styles.ticketInfo}>
                   <Text style={styles.ticketArtist}>{item.artist}</Text>
                   <Text style={styles.ticketTour}>{item.tour}</Text>
@@ -99,8 +105,25 @@ export default function RiwayatTiketScreen() {
                   </Text>
                   <Text style={styles.ticketVenue}>{item.venue}</Text>
                 </View>
-                <View style={styles.ticketBadge}>
-                  <Text style={styles.ticketBadgeText}>{item.tickets} Tiket</Text>
+                <View
+                  style={[
+                    styles.ticketBadge,
+                    item.isPendingPayment && styles.ticketBadgePending,
+                  ]}
+                >
+                  <Text
+                    style={[
+                      styles.ticketBadgeText,
+                      item.isPendingPayment && styles.ticketBadgeTextPending,
+                    ]}
+                  >
+                    {item.isPendingPayment
+                      ? 'Pending'
+                      : `${item.tickets} Tiket`}
+                  </Text>
+                  {item.isPendingPayment && (
+                    <Text style={styles.pendingSubText}>Buka QRIS</Text>
+                  )}
                 </View>
               </TouchableOpacity>
             ))

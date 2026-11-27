@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { Alert } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
 
-import { eventApi, TicketCategoryItem } from '@/api/eventApi';
+import { eventApi } from '@/api/eventApi';
 
 export interface TicketTierDisplay {
   id: string;
@@ -12,6 +12,7 @@ export interface TicketTierDisplay {
 }
 
 const TIER_COLORS = ['#6F00FF', '#F87171', '#FBBF24', '#3B82F6', '#10B981', '#EC4899'];
+const MAX_TICKETS_PER_ORDER = 6;
 
 const formatRupiah = (amount: number | string): string => {
   const num = Number(amount) || 0;
@@ -42,7 +43,7 @@ export function usePilihTiketController() {
         if (isMounted && catRes && catRes.length > 0) {
           const mappedTiers: TicketTierDisplay[] = catRes.map((cat, idx) => ({
             id: String(cat.id),
-            name: cat[`nama kategori` as keyof TicketCategoryItem] as string,
+            name: cat.nama_kategori || 'VIP',
             price: formatRupiah(cat.harga),
             color: TIER_COLORS[idx % TIER_COLORS.length],
           }));
@@ -64,7 +65,16 @@ export function usePilihTiketController() {
     };
   }, [eventId]);
 
+  const totalTickets = Object.values(quantities).reduce((sum, q) => sum + (q || 0), 0);
+
   const increment = (id: string) => {
+    if (totalTickets >= MAX_TICKETS_PER_ORDER) {
+      Alert.alert(
+        'Batas Maksimal Tiket',
+        `Maksimal pembelian adalah ${MAX_TICKETS_PER_ORDER} tiket dalam satu transaksi.`
+      );
+      return;
+    }
     setQuantities(prev => ({
       ...prev,
       [id]: (prev[id] || 0) + 1,
@@ -82,8 +92,6 @@ export function usePilihTiketController() {
     });
   };
 
-  const totalTickets = Object.values(quantities).reduce((sum, q) => sum + (q || 0), 0);
-
   const totalPrice = categories.reduce((sum, cat) => {
     const priceNum = Number(cat.price.replace(/[^0-9]/g, '')) || 0;
     return sum + priceNum * (quantities[cat.id] || 0);
@@ -97,18 +105,52 @@ export function usePilihTiketController() {
     }
   };
 
+  const handleSeeBenefit = (tierName: string) => {
+    const lower = tierName.toLowerCase();
+    let benefitText = '• Akses masuk area konser sesuai kategori\n• E-Ticket resmi dengan QR Code';
+    if (lower.includes('vip')) {
+      benefitText =
+        '• Posisi terdepan dekat panggung (Front Row)\n• Jalur masuk khusus VIP Fast Track\n• Merchandise eksklusif & Lanyard VIP\n• Akses Soundcheck Party';
+    } else if (lower.includes('festival')) {
+      benefitText =
+        '• Area berdiri (Standing) dekat panggung utama\n• Akses masuk prioritas Festival Gate\n• Wristband eksklusif konser';
+    } else if (lower.includes('cat 1')) {
+      benefitText =
+        '• Kursi bernomor (Numbered Seating) pandangan lurus panggung\n• Akses fasilitas F&B & merchandise booth';
+    } else if (lower.includes('cat 2')) {
+      benefitText =
+        '• Kursi bernomor (Numbered Seating) tribun tengah\n• E-Ticket resmi dengan QR Code';
+    }
+    Alert.alert(`Benefit Kategori ${tierName}`, benefitText);
+  };
+
   const handleLanjutkan = () => {
     if (totalTickets === 0) return;
 
-    const selected = categories
-      .filter(cat => (quantities[cat.id] || 0) > 0)
-      .map(cat => `${quantities[cat.id]}x ${cat.name}`)
-      .join(', ');
+    const selectedCategories = categories.filter(cat => (quantities[cat.id] || 0) > 0);
+    const categoryIds = selectedCategories.map(c => c.id).join(',');
+    const categoryBreakdown = selectedCategories
+      .map(c => {
+        const rawPrice = Number(c.price.replace(/[^0-9]/g, '')) || 0;
+        return `${c.id}:${quantities[c.id]}:${rawPrice}:${c.name}`;
+      })
+      .join(',');
+    const categorySummary = selectedCategories
+      .map(c => `${c.name} (${quantities[c.id]})`)
+      .join('|');
+    const avgUnitPrice = Math.round(totalPrice / totalTickets);
 
-    Alert.alert(
-      'Pemesanan Dikonfirmasi',
-      `Tiket terpilih: ${selected}\nTotal: ${formatRupiah(totalPrice)} (${totalTickets} tiket)`
-    );
+    (router as any).push({
+      pathname: '/seat-map',
+      params: {
+        id: String(eventId),
+        categoryIds,
+        breakdown: categoryBreakdown,
+        categorySummary,
+        unitPrice: String(avgUnitPrice),
+        targetQty: String(totalTickets),
+      },
+    });
   };
 
   return {
@@ -121,6 +163,7 @@ export function usePilihTiketController() {
     increment,
     decrement,
     handleBack,
+    handleSeeBenefit,
     handleLanjutkan,
   };
 }

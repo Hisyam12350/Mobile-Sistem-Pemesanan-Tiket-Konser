@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 
 import { pilihTiketStyles as styles } from '@/styles/pilihTiket/pilihTiketStyles';
@@ -21,13 +22,14 @@ export default function PilihTiketScreen() {
     increment,
     decrement,
     handleBack,
+    handleSeeBenefit,
     handleLanjutkan,
   } = usePilihTiketController();
 
   const isDisabled = totalTickets === 0;
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container} edges={['top', 'left', 'right']}>
       <StatusBar barStyle="dark-content" />
 
       <ScrollView
@@ -66,7 +68,12 @@ export default function PilihTiketScreen() {
                     <Text style={styles.tierName}>{cat.name}</Text>
                     <Text style={styles.tierPrice}>{cat.price}</Text>
                   </View>
-                  <Text style={styles.seeBenefit}>See Benefit</Text>
+                  <TouchableOpacity
+                    onPress={() => handleSeeBenefit(cat.name)}
+                    activeOpacity={0.7}
+                  >
+                    <Text style={styles.seeBenefit}>See Benefit</Text>
+                  </TouchableOpacity>
                   <View style={styles.quantityRow}>
                     <TouchableOpacity
                       style={[styles.qtyButton, qty === 0 && styles.qtyButtonDisabled]}
@@ -115,6 +122,6 @@ export default function PilihTiketScreen() {
           <Text style={styles.lanjutkanButtonText}>Lanjutkan</Text>
         </TouchableOpacity>
       </View>
-    </View>
+    </SafeAreaView>
   );
 }

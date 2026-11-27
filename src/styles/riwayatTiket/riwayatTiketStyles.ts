@@ -94,11 +94,26 @@ export const riwayatTiketStyles = StyleSheet.create({
     paddingHorizontal: 10,
     borderRadius: 10,
     backgroundColor: '#F0E6FF',
+    alignItems: 'center',
+  },
+  ticketBadgePending: {
+    backgroundColor: '#FFF3E0',
+    borderWidth: 1,
+    borderColor: '#FFB74D',
   },
   ticketBadgeText: {
     fontSize: 12,
     fontWeight: '700',
     color: '#6F00FF',
+  },
+  ticketBadgeTextPending: {
+    color: '#E65100',
+  },
+  pendingSubText: {
+    fontSize: 10,
+    fontWeight: '700',
+    color: '#E65100',
+    marginTop: 2,
   },
   loadingContainer: {
     paddingVertical: 40,
@@ -120,32 +135,5 @@ export const riwayatTiketStyles = StyleSheet.create({
     fontSize: 14,
     color: '#777777',
     textAlign: 'center',
-  },
-  bottomNav: {
-    flexDirection: 'row',
-    backgroundColor: '#6F00FF',
-    height: 64,
-    justifyContent: 'space-around',
-    alignItems: 'center',
-    paddingHorizontal: 10,
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
-  },
-  navItem: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    flex: 1,
-  },
-  navLabel: {
-    color: '#FFFFFF',
-    fontSize: 12,
-    fontWeight: '500',
-    marginTop: 2,
-  },
-  navLabelActive: {
-    color: '#FFFFFF',
-    fontWeight: '700',
   },
 });

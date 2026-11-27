@@ -10,7 +10,7 @@ export const homeStyles = StyleSheet.create({
     backgroundColor: '#FFFFFF',
   },
   scrollContent: {
-    paddingBottom: 24,
+    paddingBottom: 90,
   },
   header: {
     flexDirection: 'row',
@@ -170,9 +170,6 @@ export const homeStyles = StyleSheet.create({
     color: '#000000',
     marginRight: 8,
   },
-  heartButton: {
-    padding: 4,
-  },
   cardSubtitle: {
     fontSize: 13,
     color: '#333333',
@@ -202,25 +199,6 @@ export const homeStyles = StyleSheet.create({
     fontWeight: '700',
     color: '#6F00FF',
     marginLeft: 4,
-  },
-  bottomNav: {
-    flexDirection: 'row',
-    backgroundColor: '#6F00FF',
-    height: 64,
-    justifyContent: 'space-around',
-    alignItems: 'center',
-    paddingHorizontal: 10,
-  },
-  navItem: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    flex: 1,
-  },
-  navLabel: {
-    color: '#FFFFFF',
-    fontSize: 12,
-    fontWeight: '500',
-    marginTop: 2,
   },
   loadingContainer: {
     paddingVertical: 36,

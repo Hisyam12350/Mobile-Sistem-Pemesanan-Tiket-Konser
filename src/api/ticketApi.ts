@@ -1,48 +1,35 @@
-import { Platform } from 'react-native';
-import Constants from 'expo-constants';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-
-const getBaseUrl = (): string => {
-  if (process.env.EXPO_PUBLIC_API_URL) {
-    return process.env.EXPO_PUBLIC_API_URL;
-  }
-  if (Constants.expoConfig?.extra?.apiUrl) {
-    return Constants.expoConfig.extra.apiUrl;
-  }
-  const hostUri =
-    Constants.expoConfig?.hostUri ||
-    (Constants as any).manifest2?.extra?.expoClient?.hostUri;
-  if (hostUri) {
-    const host = hostUri.split(':')[0];
-    return `http://${host}:5000/api`;
-  }
-  if (Platform.OS === 'android') {
-    return 'http://10.0.2.2:5000/api';
-  }
-  return 'http://localhost:5000/api';
-};
-
-const API_BASE_URL = getBaseUrl();
+import { API_BASE_URL } from '@/api/config';
 
 export interface TicketItem {
   id: string | number;
   order_id?: string | number;
+  event_id?: string | number;
   kategori_id?: string | number;
   seat_id?: string | number;
   kode_unik?: string;
   status_tiket?: string;
   scanned_at?: string | null;
   created_at?: string;
+  nama_kategori?: string;
   nama_category?: string;
   nomor_kursi?: string;
   nama_event?: string;
   waktu_event?: string;
+  deskripsi?: string;
+  lokasi?: string;
+  banner_url?: string | null;
   qty?: number;
+  qr_code_svg?: string;
 }
 
 async function fetchWithAuth<T>(endpoint: string): Promise<T> {
   const url = `${API_BASE_URL}${endpoint}`;
   const token = (await AsyncStorage.getItem('@auth_token'))?.trim() || null;
+
+  if (!token) {
+    throw new Error('401: No auth token');
+  }
 
   const controller = new AbortController();
   const timeoutId = setTimeout(() => controller.abort(), 10000);
@@ -53,9 +40,14 @@ async function fetchWithAuth<T>(endpoint: string): Promise<T> {
       signal: controller.signal,
       headers: {
         'Content-Type': 'application/json',
-        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        Authorization: `Bearer ${token}`,
       },
     });
+
+    if (response.status === 401) {
+      await AsyncStorage.removeItem('@auth_token');
+      throw new Error('401: Unauthorized');
+    }
 
     if (!response.ok) {
       throw new Error(`Server returned ${response.status}`);
@@ -76,9 +68,28 @@ export const ticketApi = {
         return json.data;
       }
       return [];
-    } catch (error) {
-      console.warn('Gagal memuat tiket dari API:', error);
+    } catch {
       return [];
     }
+  },
+
+  async getTicketById(id: string | number): Promise<TicketItem | null> {
+    try {
+      const json: any = await fetchWithAuth(`/tickets/${id}`);
+      return json?.data || null;
+    } catch {
+      return null;
+    }
+  },
+
+  async getTicketQrDownloadConfig(
+    id: string | number
+  ): Promise<{ url: string; headers: Record<string, string> } | null> {
+    const token = (await AsyncStorage.getItem('@auth_token'))?.trim() || null;
+    if (!token) return null;
+    return {
+      url: `${API_BASE_URL}/tickets/${id}/download`,
+      headers: { Authorization: `Bearer ${token}` },
+    };
   },
 };

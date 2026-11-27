@@ -36,6 +36,7 @@ export default function HomeScreen() {
     getEventPrice,
     handleOpenDetail,
     handleSearchSubmit,
+    handleNotificationPress,
     handleTabPress,
   } = useHomeController();
 
@@ -84,7 +85,11 @@ export default function HomeScreen() {
               </Text>
               <Text style={styles.greetingSubtitle}>Find your favorite concert</Text>
             </View>
-            <TouchableOpacity style={styles.notificationButton} activeOpacity={0.7}>
+            <TouchableOpacity
+              style={styles.notificationButton}
+              activeOpacity={0.7}
+              onPress={handleNotificationPress}
+            >
               <Ionicons name="notifications-outline" size={26} color="#000000" />
             </TouchableOpacity>
           </View>

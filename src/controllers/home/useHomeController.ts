@@ -1,4 +1,5 @@
 import { useEffect, useState, useMemo, useCallback } from 'react';
+import { Alert } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { router } from 'expo-router';
 
@@ -34,23 +35,12 @@ export function useHomeController() {
   const [isLoadingEvents, setIsLoadingEvents] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
 
-  const fetchEvents = useCallback(async () => {
-    try {
-      const res = await eventApi.getEvents();
-      if (res && res.length > 0) {
-        setEvents(res);
-      }
-    } catch (err) {
-      console.warn('Gagal memuat list event:', err);
-    } finally {
-      setIsLoadingEvents(false);
-      setIsRefreshing(false);
-    }
-  }, []);
-
   useEffect(() => {
+    let isMounted = true;
+
     AsyncStorage.getItem('@auth_user')
       .then(value => {
+        if (!isMounted) return;
         if (value) {
           try {
             setUser(JSON.parse(value) as StoredUser);
@@ -59,15 +49,42 @@ export function useHomeController() {
           }
         }
       })
-      .catch(() => setUser(null));
+      .catch(() => {
+        if (isMounted) setUser(null);
+      });
 
-    fetchEvents();
-  }, [fetchEvents]);
+    eventApi
+      .getEvents()
+      .then(res => {
+        if (isMounted && res && res.length > 0) {
+          setEvents(res);
+        }
+      })
+      .finally(() => {
+        if (isMounted) {
+          setIsLoadingEvents(false);
+        }
+      });
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
   const onRefresh = useCallback(() => {
     setIsRefreshing(true);
-    fetchEvents();
-  }, [fetchEvents]);
+    eventApi
+      .getEvents()
+      .then(res => {
+        if (res && res.length > 0) {
+          setEvents(res);
+        }
+      })
+      .finally(() => {
+        setIsLoadingEvents(false);
+        setIsRefreshing(false);
+      });
+  }, []);
 
   const categories: CategoryItem[] = [
     { id: 'All', label: 'All' },
@@ -214,6 +231,10 @@ export function useHomeController() {
     });
   };
 
+  const handleNotificationPress = () => {
+    Alert.alert('Notifikasi', 'Belum ada notifikasi baru saat ini.');
+  };
+
   const handleTabPress = (tabName: string) => {
     if (tabName === 'Tickets') {
       (router as any).push('/riwayat-tiket');
@@ -243,6 +264,7 @@ export function useHomeController() {
     getEventPrice,
     handleOpenDetail,
     handleSearchSubmit,
+    handleNotificationPress,
     handleTabPress,
   };
 }
